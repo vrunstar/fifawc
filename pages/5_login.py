@@ -19,7 +19,7 @@ st.markdown("""
 h1 { font-family: 'Tusker Grotesk', sans-serif !important; font-weight: 800 !important; }
 
 [data-testid="stAppViewContainer"] {
-    background-image: url("app/static/bg1.png");
+    background-image: url("app/static/bg.png");
     background-size: cover;
     background-position: center;
     background-attachment: fixed;

@@ -40,7 +40,7 @@ st.markdown("""
 }
 
 [data-testid="stAppViewContainer"] {
-    background-image: url("app/static/bg1.png");
+    background-image: url("app/static/bg.png");
     background-size: cover;
     background-position: center;
     background-attachment: fixed;
