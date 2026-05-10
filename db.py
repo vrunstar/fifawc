@@ -3,12 +3,17 @@ from datetime import datetime, date
 import pytz
 from supabase import create_client, Client
 from dotenv import load_dotenv
+import streamlit as st
 
 load_dotenv()
 
 def get_client() -> Client:
-    url = os.environ["SUPABASE_URL"]
-    key = os.environ["SUPABASE_SERVICE_KEY"]
+    try:
+        url = st.secrets["SUPABASE_URL"]
+        key = st.secrets["SUPABASE_SERVICE_KEY"]
+    except:
+        url = os.environ["SUPABASE_URL"]
+        key = os.environ["SUPABASE_SERVICE_KEY"]
     return create_client(url, key)
 
 def get_ist() -> date:
