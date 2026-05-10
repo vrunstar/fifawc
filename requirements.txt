@@ -1,0 +1,11 @@
+streamlit
+supabase
+python-dotenv
+pytz
+pandas
+numpy
+scikit-learn
+joblib
+apscheduler
+plotly
+requestsq
