@@ -11,9 +11,8 @@ def get_client() -> Client:
     try:
         url = st.secrets["SUPABASE_URL"]
         key = st.secrets["SUPABASE_SERVICE_KEY"]
-    except:
-        url = os.environ["SUPABASE_URL"]
-        key = os.environ["SUPABASE_SERVICE_KEY"]
+    except KeyError as e:
+        raise Exception(f"Missing secret: {e}. Add it in Streamlit Cloud Settings → Secrets")
     return create_client(url, key)
 
 def get_ist() -> date:
