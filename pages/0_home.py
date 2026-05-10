@@ -1,5 +1,7 @@
 import streamlit as st
 import streamlit.components.v1 as components
+from utils.styles import inject_styles
+inject_styles()
 
 st.set_page_config(
     page_title="FIFA WC Predictor",

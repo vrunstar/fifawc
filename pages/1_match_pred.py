@@ -3,6 +3,8 @@ import requests
 import base64
 from db import get_client, get_ist, fixtures_today, pred_by_match, standings_all
 import streamlit.components.v1 as components
+from utils.styles import inject_styles
+inject_styles()
 
 st.set_page_config(page_title="Match Prediction", page_icon="static/logo.png", layout="wide")
 st.logo("static/logo.png")

@@ -3,6 +3,8 @@ import requests
 import base64
 from db import get_client, standings_all
 import streamlit.components.v1 as components
+from utils.styles import inject_styles
+inject_styles()
 
 st.set_page_config(page_title="Standings", page_icon="static/logo.png", layout="wide")
 st.logo("static/logo.png")

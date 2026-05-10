@@ -1,5 +1,7 @@
 import streamlit as st
 from db import get_client, login, logout, fixtures_group, update_after_res
+from utils.styles import inject_styles
+inject_styles()
 
 st.set_page_config(page_title="Admin", page_icon="static/logo.png", layout="wide")
 st.logo("static/logo.png")
