@@ -6,8 +6,8 @@ from db import get_client, pred_all, standings_all
 import pytz
 import streamlit.components.v1 as components
 
-st.set_page_config(page_title="Past Predictions", page_icon="static\logo3.png", layout="wide")
-st.logo("static\logo3.png")
+st.set_page_config(page_title="Results", page_icon="static/logo.png", layout="wide")
+st.logo("static/logo.png")
 
 @st.cache_data(ttl=86400)
 def flag(team_code: str) -> str:

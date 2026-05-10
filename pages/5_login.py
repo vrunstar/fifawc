@@ -1,8 +1,8 @@
 import streamlit as st
 from db import get_client, login, logout, fixtures_group, update_after_res
 
-st.set_page_config(page_title="Admin", page_icon="static/logo3.png", layout="wide")
-st.logo("static/logo3.png")
+st.set_page_config(page_title="Admin", page_icon="static/logo.png", layout="wide")
+st.logo("static/logo.png")
 
 st.markdown("""
 <style>

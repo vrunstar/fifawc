@@ -5,8 +5,8 @@ import base64
 from db import (get_client, fixtures_by_stage, standings_all, res_by_match)
 import streamlit.components.v1 as components
 
-st.set_page_config(page_title="KO Bracket", page_icon="static/logo3.png", layout="wide")
-st.logo("static/logo3.png")
+st.set_page_config(page_title="Knockouts", page_icon="static/logo.png", layout="wide")
+st.logo("static/logo.png")
 
 components.html("""
 <style>

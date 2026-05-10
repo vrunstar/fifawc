@@ -4,9 +4,8 @@ import base64
 from db import get_client, standings_all
 import streamlit.components.v1 as components
 
-st.set_page_config(page_title="Group Standings", page_icon="static/logo3.png", layout="wide")
-st.logo("static/logo3.png")
-
+st.set_page_config(page_title="Standings", page_icon="static/logo.png", layout="wide")
+st.logo("static/logo.png")
 @st.cache_data(ttl=86400)
 def flag(team_code: str) -> str:
     return f"app/static/flags/{team_code}.png"

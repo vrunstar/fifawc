@@ -2,8 +2,8 @@ import streamlit as st
 import streamlit.components.v1 as components
 
 st.set_page_config(
-    page_title="FIFA WC 2026",
-    page_icon="static/logo3.png",
+    page_title="FIFA WC Predictor",
+    page_icon="static/logo.png",
     layout="wide",
 )
 
