@@ -3,6 +3,26 @@ import streamlit.components.v1 as components
 from utils.styles import inject_styles
 inject_styles()
 
+import base64
+
+def load_font(path):
+    with open(path, "rb") as f:
+        return base64.b64encode(f.read()).decode()
+
+t800 = load_font("static/fonts/TuskerGrotesk-8700Bold.woff2")
+
+st.markdown(f"""
+<style>
+@font-face {{
+    font-family: 'Tusker Grotesk';
+    src: url('data:font/woff2;base64,{t800}') format('woff2');
+    font-weight: 800;
+    font-display: swap;
+}}
+h1 {{ font-family: 'Tusker Grotesk', sans-serif !important; font-weight: 800 !important; }}
+</style>
+""", unsafe_allow_html=True)
+
 st.set_page_config(
     page_title="FIFA WC Predictor",
     page_icon="static/logo.png",

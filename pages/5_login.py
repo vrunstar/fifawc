@@ -6,6 +6,9 @@ inject_styles()
 st.set_page_config(page_title="Admin", page_icon="static/logo.png", layout="wide")
 st.logo("static/logo.png")
 
+import os
+st.write(os.listdir("static/fonts"))
+
 st.markdown("""
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap');
