@@ -2,11 +2,6 @@ import streamlit as st
 import base64
 from scheduler import start
 
-import os
-st.write(os.getcwd())
-st.write(os.listdir("."))
-st.write(os.listdir("static"))
-
 st.set_page_config(
     page_title="FIFA WC 2026",
     page_icon="static/logo.png",

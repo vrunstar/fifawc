@@ -3,11 +3,7 @@ import streamlit.components.v1 as components
 from utils.styles import inject_styles
 inject_styles()
 
-import base64
 
-def load_font(path):
-    with open(path, "rb") as f:
-        return base64.b64encode(f.read()).decode()
 
 t800 = load_font("static/fonts/TuskerGrotesk-8700Bold.woff2")
 
