@@ -1,6 +1,31 @@
 import streamlit as st
 import streamlit.components.v1 as components
 from db import get_client, get_ist, fixtures_today, pred_by_match, standings_all
+import base64
+
+import base64
+
+with open("static/fonts/TuskerGrotesk-8700Bold.woff2", "rb") as f:
+    t800 = base64.b64encode(f.read()).decode()
+
+components.html(f"""
+<style>
+@font-face {{
+    font-family: 'Tusker Grotesk';
+    src: url('data:font/woff2;base64,{t800}') format('woff2');
+    font-weight: 800;
+}}
+h1 {{
+    text-align: center;
+    font-family: 'Tusker Grotesk', sans-serif;
+    font-weight: 800;
+    font-size: 3rem;
+    color: white;
+    margin: 0;
+}}
+</style>
+<h1>TODAY'S FIXTURES</h1>
+""", height=80)
 
 st.set_page_config(page_title="Fixtures", page_icon="static/logo.png", layout="wide")
 st.logo("static/logo.png")
