@@ -74,6 +74,7 @@ h2, h3 {{ font-family: 'Tusker Grotesk', sans-serif !important; font-weight: 700
 
 # ── Navigation ────────────────────────────────────────────────────────────────
 pages = [
+    st.Page("pages/0_home.py",   title="Home"),
     st.Page("pages/1_fixtures.py",   title="Fixtures"),
     st.Page("pages/2_results.py",    title="Results"),
     st.Page("pages/3_standings.py",    title="Standings"),
