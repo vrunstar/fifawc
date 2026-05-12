@@ -5,7 +5,7 @@ import base64
 st.set_page_config(
     page_title="FIFA WC Predictor",
     page_icon="static/logo.png",
-    layout="centered",
+    layout="wide",
 )
 
 if 'scheduler_started' not in st.session_state:
