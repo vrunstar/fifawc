@@ -99,17 +99,18 @@ def make_match_data(fixture):
         'match_no':   fixture['match_no'],
     }
 
-def match_html(m, is_final=False):
-    def team_row(code, flag, goals, is_winner):
-        flag_html = f'<img src="{flag}" width="20" style="border-radius:1px">' if flag else '<span class="shield">⬡</span>'
-        win_cls   = 'winner' if is_winner else ('loser' if is_winner is False else '')
-        score     = f'<span class="score">{goals}</span>' if goals is not None else ''
-        gold      = 'style="color:#FFD700"' if is_final else ''
-        return f'''<div class="team {win_cls}">
-            {flag_html}
-            <span class="team-code" {gold}>{code}</span>
-            {score}
-        </div>'''
+def team_row(code, flag, goals, is_winner):
+    is_placeholder = not flag
+    flag_html = f'<img src="{flag}" width="20" style="border-radius:1px">' if flag else '<span class="shield">⬡</span>'
+    win_cls   = 'winner' if is_winner else ('loser' if is_winner is False else '')
+    tbd_cls   = 'tbd' if is_placeholder else ''
+    score     = f'<span class="score">{goals}</span>' if goals is not None else ''
+    gold      = 'style="color:#FFD700"' if is_final else ''
+    return f'''<div class="team {win_cls} {tbd_cls}">
+        {flag_html}
+        <span class="team-code" {gold}>{code}</span>
+        {score}
+    </div>'''
 
     h_winner = m['home_win']
     a_winner = False if m['home_win'] else (True if m['home_win'] is False else None)
@@ -210,6 +211,12 @@ html = f"""
     padding: 0 10px;
     min-width: 160px;
   }}
+  .team.tbd .team-code {{
+    font-family: 'Inter', sans-serif !important;
+    font-weight: 400;
+    font-size: 0.78rem;
+    color: #e0e0e0;
+}}
 </style>
 </head>
 <body>

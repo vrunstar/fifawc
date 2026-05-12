@@ -1,5 +1,6 @@
 import streamlit as st
 from db import get_client, login, logout, fixtures_group, update_after_res
+from utils.styles import tusker_title
 
 st.set_page_config(page_title="Admin", page_icon="static/logo.png", layout="wide")
 st.logo("static/logo.png")
@@ -36,7 +37,8 @@ if 'admin_user' not in st.session_state:
     st.session_state.admin_user = None
 
 if not st.session_state.admin_user:
-    st.markdown("<h1 style='text-align:center'>ADMIN LOGIN</h1>", unsafe_allow_html=True)
+    tusker_title("ADMIN PANEL")
+    st.divider()
 
     col1, col2, col3 = st.columns([2, 1, 2])
     with col2:
