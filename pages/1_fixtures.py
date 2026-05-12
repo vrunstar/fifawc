@@ -1,74 +1,15 @@
 import streamlit as st
-import requests
-import base64
-from db import get_client, get_ist, fixtures_today, pred_by_match, standings_all
 import streamlit.components.v1 as components
-from utils.styles import inject_styles
-inject_styles()
+from db import get_client, get_ist, fixtures_today, pred_by_match, standings_all
 
-st.set_page_config(page_title="Match Prediction", page_icon="static/logo.png", layout="wide")
+st.set_page_config(page_title="Fixtures", page_icon="static/logo.png", layout="wide")
 st.logo("static/logo.png")
 
-@st.cache_data(ttl=86400)
-def flag(team_code: str) -> str:
-    return f"app/static/flags/{team_code}.png"
-
-# ── Position map ──────────────────────────────────────────────────────────────
-@st.cache_data(ttl=300)
-def build_position_map(_supabase) -> dict:
-    all_standings = standings_all(_supabase)
-    groups = {}
-    for row in all_standings:
-        g = row['group_name']
-        if g not in groups:
-            groups[g] = []
-        groups[g].append(row)
-    position_map = {}
-    for g, rows in groups.items():
-        sorted_rows = sorted(rows, key=lambda x: (-x['points'], -x['gd'], -x['gf']))
-        for i, row in enumerate(sorted_rows, 1):
-            position_map[row['team_id']] = f"{g}{i}"
-    return position_map
-
 # ── CSS ───────────────────────────────────────────────────────────────────────
-from utils.styles import tusker_title
-tusker_title("FIXTURES")
-
 st.markdown("""
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap');
 
-@font-face {
-    font-family: 'Tusker Grotesk';
-    src: url('app/static/fonts/TuskerGrotesk-5700Bold.woff2') format('woff2');
-    font-weight: 400;
-}
-@font-face {
-    font-family: 'Tusker Grotesk';
-    src: url('app/static/fonts/TuskerGrotesk-6500Bold.woff2') format('woff2');
-    font-weight: 600;
-}
-@font-face {
-    font-family: 'Tusker Grotesk';
-    src: url('app/static/fonts/TuskerGrotesk-7700Bold.woff2') format('woff2');
-    font-weight: 700;
-}
-@font-face {
-    font-family: 'Tusker Grotesk';
-    src: url('app/static/fonts/TuskerGrotesk-8700Bold.woff2') format('woff2');
-    font-weight: 800;
-}
-
-
-            
-.kickoff  { font-family: 'Inter', sans-serif; font-size: 0.9rem; font-weight: 900; color: #888; margin-top: 2px; }
-.team-meta { font-family: 'Inter', sans-serif; font-size: 0.9rem; font-weight: 900; color: #888; letter-spacing: 1px; }
-.split-label-row { font-family: 'Inter', sans-serif; display: flex; font-size: 0.9rem;
-                   font-weight: 600; margin-bottom: 2px; white-space: nowrap; overflow: hidden; }
-.split-label-row div { white-space: nowrap; overflow: hidden; }
-.split-label-row div:last-child { text-align: right; overflow: visible; flex-shrink: 0; }
-
-            
 [data-testid="stAppViewContainer"] {
     background-image: url("app/static/bg.png");
     background-size: cover;
@@ -78,7 +19,6 @@ st.markdown("""
 }
 [data-testid="stHeader"] { background: transparent; }
 [data-testid="stSidebar"] { background: rgba(14, 17, 23, 0.9); }
-
 
 .match-card {
     background: #1a1d27;
@@ -95,24 +35,67 @@ st.markdown("""
 }
 .flag-code-home { display: flex; align-items: center; gap: 10px; }
 .flag-code-away { display: flex; align-items: center; justify-content: flex-end; gap: 10px; }
-.team-code      { font-size: 1.75rem; font-weight: 800; color: #e0e0e0; letter-spacing: 1px; }
+.team-code      { font-family: 'Tusker Grotesk', sans-serif; font-size: 1.75rem; font-weight: 800; color: #e0e0e0; letter-spacing: 1px; }
+.team-meta      { font-family: 'Inter', sans-serif; font-size: 0.9rem; color: #888; letter-spacing: 1px; }
 .vs-block       { text-align: center; }
-.pred-score-big { font-size: 1.75rem; font-weight: 800; color: #e0e0e0;
-                  letter-spacing: 2px; margin-bottom: 2px; }
+.pred-score-big { font-family: 'Tusker Grotesk', sans-serif; font-size: 1.75rem; font-weight: 800; color: #e0e0e0; letter-spacing: 2px; margin-bottom: 2px; }
+.kickoff        { font-family: 'Inter', sans-serif; font-size: 0.9rem; color: #888; margin-top: 2px; }
 .divider        { border: none; border-top: 1px solid #2d3148; margin: 2px 0; }
 .split-bar-wrap { margin: 5px 0; }
-.split-bar      { display: flex; height: 8px; border-radius: 2px;
-                  overflow: hidden; background: #2d3148; }
+.split-label-row { font-family: 'Inter', sans-serif; display: flex; font-size: 0.9rem; font-weight: 600; margin-bottom: 2px; white-space: nowrap; overflow: hidden; }
+.split-label-row div { white-space: nowrap; overflow: hidden; }
+.split-label-row div:last-child { text-align: right; overflow: visible; flex-shrink: 0; }
+.split-bar      { display: flex; height: 8px; border-radius: 2px; overflow: hidden; background: #2d3148; }
 </style>
 """, unsafe_allow_html=True)
 
-# ── Data ──────────────────────────────────────────────────────────────────────
-supabase = get_client()
-fixtures = fixtures_today(supabase)
-positions = build_position_map(supabase)
+# ── Title ─────────────────────────────────────────────────────────────────────
+components.html("""
+<style>
+@font-face {
+    font-family: 'Tusker Grotesk';
+    src: url('/app/static/fonts/TuskerGrotesk-8700Bold.woff2') format('woff2');
+    font-weight: 800;
+}
+h1 {
+    text-align: center;
+    font-family: 'Tusker Grotesk', sans-serif;
+    font-weight: 800;
+    font-size: 3rem;
+    color: white;
+    margin: 0;
+}
+</style>
+<h1>TODAY'S FIXTURES</h1>
+""", height=80)
 
-st.markdown(f"<p style='text-align:center; color:#888; font-family:Inter,sans-serif; font-weight: 900; font-size:0.9rem'>{get_ist().strftime('%A, %d %B %Y')} · IST</p>", unsafe_allow_html=True)
+st.markdown(f"<p style='text-align:center; color:#888; font-family:Inter,sans-serif; font-size:0.9rem'>{get_ist().strftime('%A, %d %B %Y')} · IST</p>", unsafe_allow_html=True)
 st.divider()
+
+# ── Flag helper ───────────────────────────────────────────────────────────────
+@st.cache_data(ttl=86400)
+def flag(team_code: str) -> str:
+    return f"app/static/flags/{team_code}.png"
+
+# ── Position map ──────────────────────────────────────────────────────────────
+@st.cache_data(ttl=300)
+def build_position_map(_supabase) -> dict:
+    all_standings = standings_all(_supabase)
+    groups = {}
+    for row in all_standings:
+        g = row['group_name']
+        groups.setdefault(g, []).append(row)
+    position_map = {}
+    for g, rows in groups.items():
+        sorted_rows = sorted(rows, key=lambda x: (-x['points'], -x['gd'], -x['gf']))
+        for i, row in enumerate(sorted_rows, 1):
+            position_map[row['team_id']] = f"{g}{i}"
+    return position_map
+
+# ── Data ──────────────────────────────────────────────────────────────────────
+supabase  = get_client()
+fixtures  = fixtures_today(supabase)
+positions = build_position_map(supabase)
 
 if not fixtures:
     st.info("No matches scheduled for today.")
@@ -181,5 +164,5 @@ def render_card(f, pred, positions):
     """, unsafe_allow_html=True)
 
 for f in fixtures:
-    pred   = pred_by_match(supabase, f['match_id'])
+    pred = pred_by_match(supabase, f['match_id'])
     render_card(f, pred, positions)
