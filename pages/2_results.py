@@ -31,24 +31,7 @@ def build_position_map(_supabase) -> dict:
             position_map[row['team_id']] = f"{g}{i}"
     return position_map
 
-components.html("""
-<style>
-@font-face {
-    font-family: 'Tusker Grotesk';
-    src: url('/app/static/fonts/TuskerGrotesk-8700Bold.woff2') format('woff2');
-    font-weight: 800;
-}
-h1 {
-    text-align: center;
-    font-family: 'Tusker Grotesk', sans-serif;
-    font-weight: 800;
-    font-size: 3rem;
-    color: white;
-    margin: 0;
-}
-</style>
-<h1>RESULTS</h1>
-""", height=80)
+
 st.markdown("""
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap');

@@ -3,34 +3,19 @@ import requests
 import base64
 from db import get_client, standings_all
 import streamlit.components.v1 as components
-from utils.styles import inject_styles
-inject_styles()
+from utils.styles import tusker_title
 
+# PAGE CONFIG ------------------------------------------------------------------------
 st.set_page_config(page_title="Standings", page_icon="static/logo.png", layout="wide")
 st.logo("static/logo.png")
+
+tusker_title("RESULTS")
+
 @st.cache_data(ttl=86400)
 def flag(team_code: str) -> str:
     return f"app/static/flags/{team_code}.png"
 
-components.html("""
-<style>
-@font-face {
-    font-family: 'Tusker Grotesk';
-    src: url('/app/static/fonts/TuskerGrotesk-8700Bold.woff2') format('woff2');
-    font-weight: 800;
-}
-h1 {
-    text-align: center;
-    font-family: 'Tusker Grotesk', sans-serif;
-    font-weight: 800;
-    font-size: 3rem;
-    color: white;
-    margin: 0;
-}
-</style>
-<h1>GROUP STANDINGS</h1>
-""", height=80)
-
+# CSS ------------------------------------------------------------------------
 st.markdown("""
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap');
@@ -55,8 +40,6 @@ st.markdown("""
     src: url('app/static/fonts/TuskerGrotesk-8700Bold.woff2') format('woff2');
     font-weight: 800;
 }
-
-
 
 [data-testid="stAppViewContainer"] {
     background-image: url("app/static/bg.png");
@@ -117,7 +100,7 @@ st.markdown("""
 </style>
 """, unsafe_allow_html=True)
 
-
+#  SUPABASE ------------------------------------------------------------------------
 supabase = get_client()
 
 @st.cache_data(ttl=60)
@@ -127,7 +110,7 @@ def get_standings(_supabase):
 all_standings = get_standings(supabase)
 st.divider()
 
-# ── organise & sort ──────────────────────────────────────────────────────────
+# ORGANISE AND SORT ------------------------------------------------------------------------
 groups: dict = {}
 for row in all_standings:
     g = row['group_name']
@@ -142,17 +125,16 @@ for g in groups:
 group_keys = sorted(groups.keys())
 cols = st.columns(3)
 
-# ── render each group card ───────────────────────────────────────────────────
+# RENDER CARD ------------------------------------------------------------------------
 for i, g in enumerate(group_keys):
     rows = groups[g]
 
-    # Build every row's HTML first (no nested f-strings with format specs)
     rows_html_parts = []
     for pos, row in enumerate(rows, 1):
         team   = row['team']
         code   = team['team_code']
         flag = f"app/static/flags/{code}.png"
-        name   = team['name']      # noqa: F841  (kept for future use)
+        name   = team['name']
         played = row['played']
         won    = row['won']
         drawn  = row['drawn']
@@ -160,7 +142,6 @@ for i, g in enumerate(group_keys):
         gd     = row['gd']
         pts    = row['points']
 
-        # Pre-format everything that needs special formatting
         pos_color = "#4caf7d" if pos <= 2 else "#888"
         gd_str    = ("+" + str(gd)) if gd > 0 else str(gd)
         flag_html = (

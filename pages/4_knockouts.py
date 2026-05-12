@@ -1,44 +1,20 @@
 import streamlit as st
 import streamlit.components.v1 as components
-import requests
 import base64
 from db import (get_client, fixtures_by_stage, standings_all, res_by_match)
-import streamlit.components.v1 as components
-from utils.styles import inject_styles
-inject_styles()
+from utils.styles import tusker_title
 
 st.set_page_config(page_title="Knockouts", page_icon="static/logo.png", layout="wide")
 st.logo("static/logo.png")
 
-components.html("""
-<style>
-@font-face {
-    font-family: 'Tusker Grotesk';
-    src: url('/app/static/fonts/TuskerGrotesk-8700Bold.woff2') format('woff2');
-    font-weight: 800;
-}
-h1 {
-    text-align: center;
-    font-family: 'Tusker Grotesk', sans-serif;
-    font-weight: 800;
-    font-size: 3rem;
-    color: white;
-    margin: 0;
-}
-</style>
-<h1>KNOCKOUT BRACKETS</h1>
-""", height=80)
+# ── Load font ─────────────────────────────────────────────────────────────────
+with open("static/fonts/TuskerGrotesk-8700Bold.woff2", "rb") as f:
+    t800 = base64.b64encode(f.read()).decode()
 
+# ── CSS ───────────────────────────────────────────────────────────────────────
 st.markdown("""
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap');
-@font-face {
-    font-family: 'Tusker Grotesk';
-    src: url('app/static/fonts/TuskerGrotesk-8700Bold.woff2') format('woff2');
-    font-weight: 800;
-    font-display: swap;
-}
-
 [data-testid="stAppViewContainer"] {
     background-image: url("app/static/bg.png");
     background-size: cover;
@@ -51,7 +27,10 @@ st.markdown("""
 </style>
 """, unsafe_allow_html=True)
 
+# ── Title ─────────────────────────────────────────────────────────────────────
+tusker_title("KNOCKOUT BRACKET")
 st.divider()
+
 # ── Data ──────────────────────────────────────────────────────────────────────
 supabase     = get_client()
 r32_fixtures = fixtures_by_stage(supabase, 'R32')
@@ -61,7 +40,7 @@ sf_fixtures  = fixtures_by_stage(supabase, 'SF')
 f_fixtures   = fixtures_by_stage(supabase, 'Final')
 tp_fixtures  = fixtures_by_stage(supabase, '3RD')
 
-# Build position map
+# ── Position map ──────────────────────────────────────────────────────────────
 all_standings = standings_all(supabase)
 groups = {}
 for row in all_standings:
@@ -73,9 +52,7 @@ for g, rows in groups.items():
     for i, row in enumerate(sorted_rows, 1):
         pos_map[f"{i}{g}"] = row['team']
 
-def flag(team_code: str) -> str:
-    return f"app/static/flags/{team_code}.png"
-
+# ── Helpers ───────────────────────────────────────────────────────────────────
 def resolve(label):
     if not label:
         return None, label
@@ -105,13 +82,12 @@ def make_match_data(fixture):
     h_team, h_code = resolve(fixture['home_label'])
     a_team, a_code = resolve(fixture['away_label'])
     result = res_by_match(supabase, fixture['match_id'])
-    date = fixture['kickoff_ist'][:10] if fixture.get('kickoff_ist') else ''
     try:
         from datetime import datetime
         dt = datetime.fromisoformat(fixture['kickoff_ist'])
         date = dt.strftime('%b %d')
     except:
-        pass
+        date = ''
     return {
         'home_code': h_code,
         'away_code': a_code,
@@ -119,12 +95,31 @@ def make_match_data(fixture):
         'away_flag': f"app/static/flags/{a_code}.png" if a_team else '',
         'home_goals': result['home_goals'] if result else None,
         'away_goals': result['away_goals'] if result else None,
-        'home_win': result['outcome'] == 'H' if result else None,
-        'date': date,
-        'match_no': fixture['match_no'],
+        'home_win':   result['outcome'] == 'H' if result else None,
+        'match_no':   fixture['match_no'],
     }
 
-# Build match data
+def match_html(m, is_final=False):
+    def team_row(code, flag, goals, is_winner):
+        flag_html = f'<img src="{flag}" width="20" style="border-radius:1px">' if flag else '<span class="shield">⬡</span>'
+        win_cls   = 'winner' if is_winner else ('loser' if is_winner is False else '')
+        score     = f'<span class="score">{goals}</span>' if goals is not None else ''
+        gold      = 'style="color:#FFD700"' if is_final else ''
+        return f'''<div class="team {win_cls}">
+            {flag_html}
+            <span class="team-code" {gold}>{code}</span>
+            {score}
+        </div>'''
+
+    h_winner = m['home_win']
+    a_winner = False if m['home_win'] else (True if m['home_win'] is False else None)
+
+    return f'''<div class="match {'final-match' if is_final else ''}">
+        {team_row(m['home_code'], m['home_flag'], m['home_goals'], h_winner)}
+        {team_row(m['away_code'], m['away_flag'], m['away_goals'], a_winner)}
+    </div>'''
+
+# ── Build match data ──────────────────────────────────────────────────────────
 r32 = [make_match_data(f) for f in sorted(r32_fixtures, key=lambda x: x['match_no'])]
 r16 = [make_match_data(f) for f in sorted(r16_fixtures, key=lambda x: x['match_no'])]
 qf  = [make_match_data(f) for f in sorted(qf_fixtures,  key=lambda x: x['match_no'])]
@@ -132,45 +127,14 @@ sf  = [make_match_data(f) for f in sorted(sf_fixtures,  key=lambda x: x['match_n
 fin = [make_match_data(f) for f in sorted(f_fixtures,   key=lambda x: x['match_no'])]
 tp  = [make_match_data(f) for f in sorted(tp_fixtures,  key=lambda x: x['match_no'])]
 
-def match_html(m):
-    def team_row(code, flag, goals, is_winner):
-        is_placeholder = not flag and (
-            code.startswith(('1','2','3','W','L')) or code == 'TBD'
-        )
-        if is_placeholder:
-            return f'''<div class="team tbd">
-                <span class="shield">⬡</span>
-                <span class="team-code">{code}</span>
-            </div>'''
-        flag_html = f'<img src="{flag}" width="20" style="border-radius:1px">' if flag else '<span class="shield">⬡</span>'
-        win_cls = 'winner' if is_winner else ('loser' if is_winner is False else '')
-        score = f'<span class="score">{goals}</span>' if goals is not None else ''
-        return f'''<div class="team {win_cls}">
-            {flag_html}
-            <span class="team-code">{code}</span>
-            {score}
-        </div>'''
-
-    h_winner = m['home_win']
-    a_winner = False if m['home_win'] else (True if m['home_win'] is False else None)
-
-    return f'''<div class="match">
-        {team_row(m['home_code'], m['home_flag'], m['home_goals'], h_winner)}
-        {team_row(m['away_code'], m['away_flag'], m['away_goals'], a_winner)}
-    </div>'''
-
-# Left side R32: matches 0-7, Right side: matches 8-15
-left_r32  = r32[:8]
-right_r32 = r32[8:]
-left_r16  = r16[:4]
-right_r16 = r16[4:]
-left_qf   = qf[:2]
-right_qf  = qf[2:]
-left_sf   = sf[:1]
-right_sf  = sf[1:]
+left_r32  = r32[:8];  right_r32 = r32[8:]
+left_r16  = r16[:4];  right_r16 = r16[4:]
+left_qf   = qf[:2];   right_qf  = qf[2:]
+left_sf   = sf[:1];   right_sf  = sf[1:]
 final_m   = fin[0] if fin else None
-tp_m      = tp[0] if tp else None
+tp_m      = tp[0]  if tp  else None
 
+# ── Bracket HTML ──────────────────────────────────────────────────────────────
 html = f"""
 <!DOCTYPE html>
 <html>
@@ -179,7 +143,7 @@ html = f"""
   @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap');
   @font-face {{
     font-family: 'Tusker Grotesk';
-    src: url('/app/static/fonts/TuskerGrotesk-8700Bold.woff2') format('woff2');
+    src: url('data:font/woff2;base64,{t800}') format('woff2');
     font-weight: 900;
     font-display: swap;
   }}
@@ -192,10 +156,8 @@ html = f"""
     flex-direction: row;
     align-items: center;
     justify-content: center;
-    gap: 0;
     min-width: 1400px;
   }}
-
   .col {{
     display: flex;
     flex-direction: column;
@@ -203,7 +165,6 @@ html = f"""
     align-items: center;
     flex: 1;
   }}
-
   .match {{
     background: #1a1d27;
     border: 1.5px solid #2d3148;
@@ -212,7 +173,7 @@ html = f"""
     width: 130px;
     margin: 8px 0;
   }}
-
+  .final-match {{ border-color: #FFD700; }}
   .team {{
     display: flex;
     align-items: center;
@@ -223,7 +184,6 @@ html = f"""
     min-height: 34px;
   }}
   .team:last-of-type {{ border-bottom: none; }}
-
   .team-code {{
     font-family: 'Tusker Grotesk', sans-serif;
     font-weight: 900;
@@ -234,22 +194,13 @@ html = f"""
   }}
   .team.winner .team-code {{ color: #4caf7d; }}
   .team.loser  .team-code {{ color: #3a3f55; }}
-  .team.tbd    .team-code {{
-    font-family: 'Inter', sans-serif;
-    font-weight: 400;
-    font-size: 0.72rem;
-    color: #e0e0e0;
-  }}
-
   .score {{
-    font-family: 'Tusker Grotesk', sans-serif;
+    font-family: 'Inter', sans-serif;
     font-weight: 700;
     font-size: 0.85rem;
     color: inherit;
   }}
-
   .shield {{ color: #2d3148; font-size: 1rem; }}
-
   .trophy-col {{
     display: flex;
     flex-direction: column;
@@ -259,68 +210,26 @@ html = f"""
     padding: 0 10px;
     min-width: 160px;
   }}
-
-  .trophy {{ font-size: 3rem; }}
-  .champion-label {{
-    font-family: 'Inter', sans-serif;
-    font-size: 0.65rem;
-    color: #555;
-    text-transform: uppercase;
-    letter-spacing: 2px;
-  }}
 </style>
 </head>
 <body>
 <div class="bracket">
+  <div class="col" style="gap:4px">{''.join(match_html(m) for m in left_r32)}</div>
+  <div class="col" style="gap:60px">{''.join(match_html(m) for m in left_r16)}</div>
+  <div class="col" style="gap:180px">{''.join(match_html(m) for m in left_qf)}</div>
+  <div class="col" style="gap:400px">{''.join(match_html(m) for m in left_sf)}</div>
 
-  <!-- LEFT R32 -->
-  <div class="col" style="gap: 4px">
-    {''.join(match_html(m) for m in left_r32)}
-  </div>
-
-  <!-- LEFT R16 -->
-  <div class="col" style="gap: 60px">
-    {''.join(match_html(m) for m in left_r16)}
-  </div>
-
-  <!-- LEFT QF -->
-  <div class="col" style="gap: 180px">
-    {''.join(match_html(m) for m in left_qf)}
-  </div>
-
-  <!-- LEFT SF -->
-  <div class="col" style="gap: 400px">
-    {''.join(match_html(m) for m in left_sf)}
-  </div>
-
-  <!-- CENTER -->
   <div class="trophy-col">
-        <img src="/app/static/trophy.png" width="80" style="margin-bottom:16px">
-        {match_html(final_m) if final_m else ''}
-        <div style="height:30px"></div>
-        {match_html(tp_m) if tp_m else ''}
-    </div>
-
-  <!-- RIGHT SF -->
-  <div class="col" style="gap: 400px">
-    {''.join(match_html(m) for m in right_sf)}
+    <img src="/app/static/trophy.png" width="80" style="margin-bottom:16px">
+    {match_html(final_m, is_final=True) if final_m else ''}
+    <div style="height:30px"></div>
+    {match_html(tp_m) if tp_m else ''}
   </div>
 
-  <!-- RIGHT QF -->
-  <div class="col" style="gap: 180px">
-    {''.join(match_html(m) for m in right_qf)}
-  </div>
-
-  <!-- RIGHT R16 -->
-  <div class="col" style="gap: 60px">
-    {''.join(match_html(m) for m in right_r16)}
-  </div>
-
-  <!-- RIGHT R32 -->
-  <div class="col" style="gap: 4px">
-    {''.join(match_html(m) for m in right_r32)}
-  </div>
-
+  <div class="col" style="gap:400px">{''.join(match_html(m) for m in right_sf)}</div>
+  <div class="col" style="gap:180px">{''.join(match_html(m) for m in right_qf)}</div>
+  <div class="col" style="gap:60px">{''.join(match_html(m) for m in right_r16)}</div>
+  <div class="col" style="gap:4px">{''.join(match_html(m) for m in right_r32)}</div>
 </div>
 </body>
 </html>
