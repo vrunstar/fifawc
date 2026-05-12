@@ -50,6 +50,7 @@ st.markdown("""
 """, unsafe_allow_html=True)
 
 # ── Title ─────────────────────────────────────────────────────────────────────
+
 components.html("""
 <style>
 @font-face {
