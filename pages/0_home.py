@@ -33,5 +33,5 @@ h1 {{
     line-height: 1.1;
 }}
 </style>
-<h1><br>WELCOME TO MY<br>2026 FIFA WORLD CUP<br>PREDICTOR</h1>
+<h1> <br>WELCOME TO MY<br>2026 FIFA WORLD CUP<br>PREDICTOR</h1>
 """, height=600)
