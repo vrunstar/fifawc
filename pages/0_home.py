@@ -5,7 +5,7 @@ import base64
 st.set_page_config(
     page_title="FIFA WC Predictor",
     page_icon="static/logo.png",
-    layout="wide",
+    layout="centered",
 )
 
 if 'scheduler_started' not in st.session_state:
@@ -27,7 +27,7 @@ h1 {{
     text-align: center;
     font-family: 'Tusker Grotesk', sans-serif;
     font-weight: 800;
-    font-size: 5rem;
+    font-size: 6rem;
     color: white;
     margin: 0;
     line-height: 1.1;
