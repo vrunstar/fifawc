@@ -74,27 +74,6 @@ st.markdown("""
 </style>
 """, unsafe_allow_html=True)
 
-# ── Title ─────────────────────────────────────────────────────────────────────
-
-components.html("""
-<style>
-@font-face {
-    font-family: 'Tusker Grotesk';
-    src: url('/app/static/fonts/TuskerGrotesk-8700Bold.woff2') format('woff2');
-    font-weight: 800;
-}
-h1 {
-    text-align: center;
-    font-family: 'Tusker Grotesk', sans-serif;
-    font-weight: 800;
-    font-size: 3rem;
-    color: white;
-    margin: 0;
-}
-</style>
-<h1>TODAY'S FIXTURES</h1>
-""", height=80)
-
 st.markdown(f"<p style='text-align:center; color:#888; font-family:Inter,sans-serif; font-size:0.9rem'>{get_ist().strftime('%A, %d %B %Y')} · IST</p>", unsafe_allow_html=True)
 st.divider()
 
