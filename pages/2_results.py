@@ -5,8 +5,8 @@ from datetime import datetime
 from db import get_client, pred_all, standings_all
 import pytz
 import streamlit.components.v1 as components
-from utils.styles import inject_styles
-inject_styles()
+from utils.styles import tusker_title
+tusker_title("RESULTS")
 
 st.set_page_config(page_title="Results", page_icon="static/logo.png", layout="wide")
 st.logo("static/logo.png")
