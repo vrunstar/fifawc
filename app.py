@@ -74,11 +74,11 @@ h2, h3 {{ font-family: 'Tusker Grotesk', sans-serif !important; font-weight: 700
 
 # ── Navigation ────────────────────────────────────────────────────────────────
 pages = [
-    st.Page("pages/1_match_pred.py",   title="Fixtures"),
-    st.Page("pages/2_past_pred.py",    title="Results"),
+    st.Page("pages/1_fixtures.py",   title="Fixtures"),
+    st.Page("pages/2_results.py",    title="Results"),
     st.Page("pages/3_standings.py",    title="Standings"),
-    st.Page("pages/4_ko.py",           title="Knockouts"),
-    st.Page("pages/5_login.py",        title="Admin"),
+    st.Page("pages/4_knockouts.py",           title="Knockouts"),
+    st.Page("pages/5_admin.py",        title="Admin"),
 ]
 
 pg = st.navigation(pages, position='top')
