@@ -10,6 +10,9 @@ st.logo("static/logo.png")
 with open("static/fonts/TuskerGrotesk-8700Bold.woff2", "rb") as f:
     t800 = base64.b64encode(f.read()).decode()
 
+with open("static/trophy.png", "rb") as f:
+    trophy_b64 = base64.b64encode(f.read()).decode()
+
 st.markdown("""
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap');
@@ -177,7 +180,7 @@ html = f"""<!DOCTYPE html>
   <div class="col" style="gap:180px">{left_qf_html}</div>
   <div class="col" style="gap:400px">{left_sf_html}</div>
   <div class="trophy-col">
-    <img src="/app/static/trophy.png" width="80" style="margin-bottom:16px">
+    <img src="data:image/png;base64,{trophy_b64}" width="80" style="margin-bottom:16px">
     {final_html}
     <div style="height:30px"></div>
     {tp_html}
