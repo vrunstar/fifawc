@@ -180,7 +180,7 @@ html = f"""<!DOCTYPE html>
   <div class="col" style="gap:180px">{left_qf_html}</div>
   <div class="col" style="gap:400px">{left_sf_html}</div>
   <div class="trophy-col">
-    <img src="data:image/png;base64,{trophy_b64}" width="80" style="margin-bottom:16px">
+    <img src="data:image/png;base64,{trophy_b64}" width="80" style="margin-bottom:5px">
     {final_html}
     <div style="height:30px"></div>
     {tp_html}
