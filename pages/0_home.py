@@ -1,7 +1,6 @@
 import streamlit as st
 import streamlit.components.v1 as components
-from utils.styles import inject_styles
-inject_styles()
+from utils.styles import tusker_title
 
 import base64
 
