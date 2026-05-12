@@ -31,24 +31,8 @@ def build_position_map(_supabase) -> dict:
     return position_map
 
 # ── CSS ───────────────────────────────────────────────────────────────────────
-components.html("""
-<style>
-@font-face {
-    font-family: 'Tusker Grotesk';
-    src: url('/app/static/fonts/TuskerGrotesk-8700Bold.woff2') format('woff2');
-    font-weight: 800;
-}
-h1 {
-    text-align: center;
-    font-family: 'Tusker Grotesk', sans-serif;
-    font-weight: 800;
-    font-size: 3rem;
-    color: white;
-    margin: 0;
-}
-</style>
-<h1>TODAY'S FIXTURES</h1>
-""", height=80)
+from utils.styles import tusker_title
+tusker_title("FIXTURES")
 
 st.markdown("""
 <style>

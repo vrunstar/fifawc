@@ -49,3 +49,26 @@ def inject_styles():
     [data-testid="stSidebar"] {{ background: rgba(14, 17, 23, 0.9); }}
     </style>
     """, unsafe_allow_html=True)
+
+import streamlit.components.v1 as components
+
+def tusker_title(text: str, size: str = "3rem"):
+    components.html(f"""
+    <style>
+    @font-face {{
+        font-family: 'Tusker Grotesk';
+        src: url('/app/static/fonts/TuskerGrotesk-8700Bold.woff2') format('woff2');
+        font-weight: 800;
+    }}
+    h1 {{
+        text-align: center;
+        font-family: 'Tusker Grotesk', sans-serif;
+        font-weight: 800;
+        font-size: {size};
+        color: white;
+        margin: 0;
+        padding: 10px 0;
+    }}
+    </style>
+    <h1>{text}</h1>
+    """, height=90)
