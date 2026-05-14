@@ -9,7 +9,7 @@ from utils.styles import tusker_title
 st.set_page_config(page_title="Standings", page_icon="static/logo.png", layout="wide")
 st.logo("static/logo.png")
 
-tusker_title("RESULTS")
+tusker_title("GROUP STANDINGS")
 
 @st.cache_data(ttl=86400)
 def flag(team_code: str) -> str:
